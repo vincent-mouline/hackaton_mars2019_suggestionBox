@@ -1,4 +1,4 @@
-<div class="col-md-4">
+<div class="">
     <div class="card <?= $colorcards['bordercolor'] ?> user-card ">
             <div class="card-block py-3 text-left">
                 <h5 class="f-w-600"><?= ucfirst(strtolower($idea['firstname'])) . ' ' . strtoupper($idea['lastname']) ?> </h5>
@@ -18,12 +18,7 @@
                 <hr>
 
                 <p class="text-muted m-t-15 mb-1"><!-- Barometre good / bad idea -->
-                    <?php  if (isValidIdea($pdo,$idea['ididea'])) { ?>
-                            <span class="badge badge-pill p-3 badge-success">Idée validée</span>
-                    <?php } else {?>
-                        <?= getranking($idea['ididea']); ?> %</p>
-                <?php }; ?>
-
+                    <?=  getranking($idea['ididea']); ?> %</p>
                 <!-- activity-leval-blue // activity-leval-green // activity-leval-yellow // -->
                 <div class="progress my-3">
 
@@ -50,7 +45,11 @@
                 </div>
             </div>
             <p class="mb-0 mt-1 pt-2 text-muted">
-                <?= DisplayDateFromSQL($idea['date']); ?>
+                <?php
+                $phpdate = strtotime($idea['date']);
+                $mysqldate = date('d/m/Y', $phpdate);
+                echo $mysqldate;
+                ?>
             </p>
     </div>
     <div class="card-footer text-center">

@@ -31,11 +31,6 @@ $queryBestIdeas .= " WHERE eval GROUP BY idea.ididea ";
 $queryBestIdeas .= " ORDER BY counteval DESC  LIMIT 3;";
 $statementBestIdeas= $pdo->query($queryBestIdeas);
 $bestideas = $statementBestIdeas->fetchAll(PDO::FETCH_ASSOC);
-
-
-$queryCategory = "SELECT * FROM category";
-$statementCategory= $pdo->query($queryCategory);
-$categories = $statementCategory->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!doctype html>
@@ -58,53 +53,75 @@ $categories = $statementCategory->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body class="m-0">
 <header>
-<?php require 'header.php' ?>
+    <?php require 'header.php' ?>
 
-<div class="jumbotron headerBotron jumbotron-fluid m-0">
-    <div class="container justify-content-center">
-        <h1 class="text-light text-center my-3">L'IDÉE DU JOUR </h1>
+    <div class="jumbotron headerBotron jumbotron-fluid m-0">
+        <div class="container justify-content-center">
+            <h1 class="text-light text-center my-3">L'IDÉE DU JOUR </h1>
 
-        <?php require '../src/card_large.php' ?>
+            <?php require '../src/card_large.php' ?>
 
+        </div>
     </div>
-</div>
 </header>
-
 <section>
     <h2 id="bestID" class="text-warning text-center my-3">LES MEILLEURES IDEES DU MOMENT ...</h2>
     <div class="container">
         <div class="row">
             <?php
-                $colorcards=[];
-                foreach($bestideas as $idea) : ?>
+            $colorcards=[];
+            foreach($bestideas as $idea) : ?>
                 <?php
-                    $ranking = getRanking($idea['ididea']);
-                    $colorcards = getColorbyCategory($idea['categoryid']);
+                $ranking = getRanking($idea['ididea']);
+                $colorcards = getColorbyCategory($idea['categoryid']);
                 include '../src/cards.php'; ?>
             <?php endforeach; ?>
         </div>
     </div>
 </section>
 
+<?php
+$queryRecentIdeas = "SELECT * FROM idea ORDER BY date DESC LIMIT 3;";
+$statementRecentIdeas= $pdo->query($queryRecentIdeas);
+$recentideas = $statementRecentIdeas->fetchAll(PDO::FETCH_ASSOC);
+?>
 <section>
-    <h2 id="bestID" class="text-warning text-center my-3">Les idées ont du style</h2>
+    <h2 id="bestID" class="text-warning text-center my-3">LES IDEES RECENTES ...</h2>
     <div class="container">
         <div class="row">
-            <?php foreach($categories as $category) :
-                $colorcards = getColorbyCategory($category['idcategory']);
-            ?>
-            <div class="col-md-12">
-                <h3> <span class="card-text"><img class="iconpic" alt="Idée" src="assets/img/<?= tag($category['idcategory']); ?>">Idée <?= $category['category'] ?></h3>
-
-                <div class="card <?= $colorcards['bordercolor'] ?> ">
-                    <div class="card-body font-weight-light">
-                        <h4><?= $category['catdescr'] ?></h4>
-                    </div>
-                </div>
-            </div>
+            <?php
+            $colorcards=[];
+            foreach($recentideas as $idea) : ?>
+                <?php
+                $ranking = getRanking($idea['ididea']);
+                $colorcards = getColorbyCategory($idea['categoryid']);
+                include '../src/cards.php'; ?>
             <?php endforeach; ?>
+        </div>
+    </div>
+</section>
 
+<?php
 
+$queryCommIdeas = "SELECT * FROM idea JOIN (SELECT count(ideval) as countcomm, ideaid  ";
+$queryCommIdeas .= "FROM eval WHERE eval.comment <> '' OR eval.comment IS NOT NULL GROUP BY ideaid) ";
+$queryCommIdeas .= " as TableA ON TableA.ideaid = idea.ididea ORDER BY countcomm DESC LIMIT 3;";
+$statementCommIdeas= $pdo->query($queryCommIdeas);
+$commideas = $statementCommIdeas->fetchAll(PDO::FETCH_ASSOC);
+?>
+
+<section>
+    <h2 id="bestID" class="text-warning text-center my-3">LES IDEES LES PLUS COMMENTEES ...</h2>
+    <div class="container">
+        <div class="row">
+            <?php
+            $colorcards=[];
+            foreach($commideas as $idea) : ?>
+                <?php
+                $ranking = getRanking($idea['ididea']);
+                $colorcards = getColorbyCategory($idea['categoryid']);
+                include '../src/cards.php'; ?>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
